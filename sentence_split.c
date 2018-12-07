@@ -1,3 +1,4 @@
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -40,6 +41,7 @@ int word_count(char* p_input) //Counts the number of word in a string by countin
         {
             return word_num; //This is the exit condition for the loop, when p_first is at the last word, p_curr is NULL as there is no space after it. so it will break the loop and funtion by returning the word number;
         }
+		*p_curr = 0;
 
         word_num++; //increments the word counter
         p_first = p_curr+1; //p_first points to the element after the space, so when the second interation starts it is not pointing to a space
@@ -53,12 +55,7 @@ int word_count(char* p_input) //Counts the number of word in a string by countin
 char* char_count(char* p_input,int* p_char_ctr) //counts the number of char in a particular word.
 {
     char* p_first = p_input; //takes in the input string
-    char* p_last = strchr(p_input,' '); //finds the first occurance of a space in that string
-    if(p_last == NULL)
-    {
-        p_last = strchr(p_input,'\0'); //if p_input is the final word, then p_last will return null as there is no space afterwards, so '\0' is found
-    }
-
+    char* p_last = strchr(p_input,0);
     *p_char_ctr = p_last - p_first; //the number is char is simply the subtraction of 2 address, it is the number of elements between first character and space, but the subtraction will not count space.
 
     return p_last+1;
@@ -78,16 +75,9 @@ char** sentence_split(char* p_input, int word_num)
         p_char_count = char_count(p_char_count,&char_number);
         printf("char number%d:\n",char_number);
         *(pp_split+i) = (char *) malloc(sizeof(char) * (char_number+1));
+		strcpy(*(pp_split + i), (p_char_count - char_number - 1) ); //copies the word (including null zero from input to destination
 
-        for(int split_ctr = 0; split_ctr < char_number; split_ctr++)
-        {
-            *(*(pp_split+i)+split_ctr) = *(p_input+in_ctr);
-            in_ctr++;
-        }
-
-        *(*(pp_split+i)+char_number) = '\0';
-        in_ctr++;
-
+        
     }
 
     return pp_split;
