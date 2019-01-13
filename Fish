@@ -1,0 +1,117 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct item
+{
+    char *p_name;
+    int qty;
+    int write_off;
+};
+
+
+/*-------- int item_counter() ------------*/
+int item_counter(char *p_input)
+{
+    char *p_first = p_input;
+    char *p_last = strrchr(p_input, ']');
+    char *p_curr;
+    int item_number = 1; // by default its assumed there is at least 1.
+    
+    while(1)
+    {
+        p_curr = strchr(p_first, ']'); // items are delimited by ], so lets assume that input is valid. so number of ] = num of item.
+        
+        if(p_curr == NULL)
+        {
+            return 0; //If there is no ] found (meaning no items), then number of item is zero.
+        }
+        else if(p_curr == p_last)
+        {
+            return item_number; //if p_curr is at the final item, return item_number;
+        }
+        else
+        {
+            item_number++; //if p_curr is not at the final item increment the counter, and p_first points to the char after the ].
+            p_first = p_curr+1;
+        }
+    }
+
+}
+/* ------------ struct item *exam(char *p_input, char *p_item_name)   -----------*/
+struct item *exam(char *p_input, char *p_item_name)
+{
+    
+    int exp_year = 0;
+   int item_num = item_counter(p_input);
+   struct item *info = malloc(1* sizeof(struct item)); // declares 1 struct.
+   int name_len = strlen(p_item_name);
+   info ->p_name = (char *)malloc( (name_len+1) * sizeof(char)); //allocates namelen+1 bytes for p_name
+   
+   
+   char *p_input_info = strchr(p_input,'[');
+   char *p_input_info3 = strchr(p_input,']');
+   char *p_input_info2 = strstr(p_input,p_item_name);
+   for(int i = 0; i <item_num; i++) 
+   {
+
+        if(p_input_info2 > p_input_info && p_input_info2 < p_input_info3)
+            break;
+        else
+        {
+            p_input_info = strchr(++p_input_info,'[');
+            p_input_info3 = strchr(++p_input_info3,']');
+        }
+   }
+  
+   if(p_input_info2 == NULL)
+   {
+       printf("\n the item with the name %s was not found in the input!", p_item_name); //if the name is not present in input.
+       return 0;
+   }
+   
+   strncpy(info -> p_name,p_input_info2, name_len); // copies the name from input to struct.
+   info -> p_name[name_len] = '\0'; //sets null zero.
+   // qty copy
+   
+   p_input_info3 = strstr(p_input_info, "Quantity:"); // p_input_info now points to the "Quantity:" string in the input string.
+   p_input_info3 = strchr(p_input_info3, ':'); //p_input_info now points the the : of the "Quantity: "in input.
+   p_input_info3++; //it now points to the value immediately after it(could be space or could be number);
+   info -> qty = atoi(p_input_info3); //gets the value from input and puts it into info.qty.
+   
+   //expired
+    p_input_info3 = strchr(p_input_info, '-'); // points to the '-' in  01-2018;
+    p_input_info3++;
+    exp_year = atoi(p_input_info3);
+    if(exp_year < 2019)
+        info -> write_off = 0; // if year is less than 2019, then it is expired.
+    else
+        info -> write_off = 1;
+   
+   return info;
+   
+}
+
+
+
+int main()
+{
+    char input[200];
+    printf("Enter the input:");
+    gets(input);
+    int item_number = item_counter(input); //gets the number of item present in the input.
+    printf("enter the item name:");
+    char item_name[81];
+    gets(item_name);
+    
+    
+    struct item *p_info =exam(input,item_name);
+    
+    printf("%s %d %d",p_info -> p_name, p_info -> qty, p_info -> write_off);
+    
+    return 0;
+    
+    
+    
+}
