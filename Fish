@@ -111,7 +111,5 @@ int main()
     printf("%s %d %d",p_info -> p_name, p_info -> qty, p_info -> write_off);
     
     return 0;
-    
-    
-    
+         
 }
